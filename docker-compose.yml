@@ -1,0 +1,69 @@
+version: "3"
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    entrypoint: sh -c "
+      echo 'CREATE DATABASE IF NOT EXISTS connectall;' > /docker-entrypoint-initdb.d/init.sql;
+      /usr/local/bin/docker-entrypoint.sh --bind-address=0.0.0.0
+      "
+    ports:
+      - "3306:3306"
+    networks:
+      - cg-connectall
+
+  dbupdater:
+    depends_on:
+      - db
+    image: ""
+    environment:
+      CA_NEW_OR_UPGRADE: new
+      CA_DATABASE_NAME: connectall
+      CA_DATABASE_TYPE: "2"
+      CA_DATABASE_JDBC: "jdbc:mysql://db:3306/connectall?useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&useSSL=false"
+      CA_JDBC_DRIVER: com.mysql.jdbc.Driver
+      CA_DATABASE_USERNAME: root
+      CA_DATABASE_PASSSWORD: root
+    volumes:
+      - connectall_db_conf:/usr/app/mule/conf
+      - connectall_current_sql:/usr/app/sql/current
+    networks:
+      - cg-connectall
+
+  mule:
+    image: ""
+    ports:
+      - "7070:7070"
+      - "8090:8090"
+      - "60000:60000"
+      - "8098:8098"
+      - "8081:8081"
+    volumes:
+      - connectall_db_conf:/tmp/dbconf
+      - connectall_database:/opt/mule-standalone/database
+      - connectall_logs:/opt/mule-standalone/logs
+    networks:
+      - cg-connectall
+
+  tomcat:
+    image: ""
+    environment:
+      JAVA_OPTS:
+    ports:
+      - "8080:8080"
+    volumes:
+      - connectall_db_conf:/tmp/dbconf
+      - connectall_database:/usr/local/tomcat/database
+      - connectall_logs:/usr/local/tomcat/logs
+    networks:
+      - cg-connectall
+
+volumes:
+  connectall_db_conf:
+  connectall_current_sql:
+  connectall_database:
+  connectall_logs:
+
+networks:
+  cg-connectall:
