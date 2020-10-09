@@ -41,6 +41,7 @@ services:
       - "8081:8081"
     volumes:
       - connectall_db_conf:/tmp/dbconf
+      - connectall_conf:/opt/mule-standalone/conf
       - connectall_database:/opt/mule-standalone/database
       - connectall_logs:/opt/mule-standalone/logs
     networks:
@@ -54,8 +55,9 @@ services:
       - "8080:8080"
     volumes:
       - connectall_db_conf:/tmp/dbconf
+      - connectall_conf:/usr/local/mule/conf
       - connectall_database:/usr/local/tomcat/database
-      - connectall_logs:/usr/local/tomcat/logs
+      - connectall_logs:/usr/local/mule/logs
     networks:
       - cg-connectall
 
