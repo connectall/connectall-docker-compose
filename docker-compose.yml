@@ -10,6 +10,8 @@ services:
       "
     ports:
       - "3306:3306"
+    volumes:
+      - connectall_db:/var/lib/mysql
     networks:
       - cg-connectall
 
@@ -62,6 +64,8 @@ services:
       - cg-connectall
 
 volumes:
+  connectall_db:
+  connectall_conf:
   connectall_db_conf:
   connectall_current_sql:
   connectall_database:
